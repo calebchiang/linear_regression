@@ -52,7 +52,9 @@ def main():
     w = 9449.418339718359
     b = 24851.91039472122
 
-    years_of_experience = 5
+    print("Welcome to the Salary Predictor!")
+    years_of_experience = int(input("Please enter the years of experience: "))
+
     predicted_salary = predict(years_of_experience, w, b)
 
     print(f"The predicted salary for someone with {years_of_experience} years of experience is: ${predicted_salary:.2f}")
