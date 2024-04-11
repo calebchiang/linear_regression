@@ -1,11 +1,14 @@
 from sklearn.datasets import make_regression
 import pandas as pd
 
-def generate_and_save_data(filename, n_samples=500, n_features=1, noise=15, random_state=42):
-    X, y = make_regression(n_samples=n_samples, n_features=n_features, noise=noise, random_state=random_state)
-    df = pd.DataFrame(X, columns=[f'Feature_{i+1}' for i in range(n_features)])
-    df['Target'] = y
+def filter_and_save_data(csv_path):
+    df = pd.read_csv(csv_path)
+    if df.columns[0] != 'YearsExperience' and df.columns[0] != 'Salary':
+        df = df.drop(df.columns[0], axis=1)
 
-    df.to_csv(filename, index=False)
+    df = df[['YearsExperience', 'Salary']]
+    df.to_csv(csv_path, index=False)
+    print(f"Updated CSV saved to {csv_path}.")
 
-generate_and_save_data('dataset.csv')
+csv_path = 'Salary_dataset.csv'
+filter_and_save_data(csv_path)

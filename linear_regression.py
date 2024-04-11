@@ -1,52 +1,60 @@
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 
-dataset = pd.read_csv('dataset.csv')
-X = dataset['Feature_1'].values
-y = dataset['Target'].values
+dataset = pd.read_csv('Salary_dataset.csv')
+X_train = dataset['YearsExperience'].values
+y_train = dataset['Salary'].values
 
-def predict(X, w, b):
-    y_hat = w * X + b
+def predict(x, w, b):
+    return x * w + b
 
-    return y_hat
-
-def compute_cost(y_hat, y):
-    m = len(y)
-    total_error = sum((y_hat - y) ** 2)
-    cost = total_error / (2 * m)
-
+def compute_cost(x, y, w, b):
+    m = x.shape[0]
+    f_wb = predict(x, w, b)
+    cost = np.sum((f_wb - y) ** 2) / (2 * m)
     return cost
 
-def gradient_descent(X, y, w, b, learning_rate, iterations):
-    m = len(y)
+def compute_gradient(x, y, w, b):
+    m = x.shape[0]
+    dj_dw = 0
+    dj_db = 0
+    f_wb = predict(x, w, b)
+
+    for i in range(m):
+        dj_dw = dj_dw + (f_wb[i] - y[i]) * x[i]
+        dj_db = dj_db + (f_wb[i] - y[i])
+    dj_dw = dj_dw / m
+    dj_db = dj_db / m
+
+    return dj_dw, dj_db
+
+def gradient_descent(x, y, w_init, b_init, alpha, iterations):
+    w = w_init
+    b = b_init
+    costs = []
 
     for i in range(iterations):
-        # Predict current y_hat using the predict function
-        y_hat = predict(X, w, b)
+        dj_dw, dj_db = compute_gradient(x, y, w, b)
+        w = w - alpha * dj_dw
+        b = b - alpha * dj_db
 
-        # Compute gradients
-        dw = (1/m) * np.dot((y_hat - y), X)
-        db = (1/m) * np.sum(y_hat - y)
+        cost = compute_cost(x, y, w, b)
+        costs.append(cost)
 
-        # Update parameters
-        w -= learning_rate * dw
-        b -= learning_rate * db
+        if i % 100 == 0:
+            cost = compute_cost(x, y, w, b)
+            print(f"Iteration {i}: Cost {cost:.4f}")
 
-    return w, b
+    return w, b, costs
 
 def main():
-    w = 63.74423098683879
-    b = -0.5873894300569021
-    learning_rate = 0.01
-    iterations = 1000
+    w = 9449.418339718359
+    b = 24851.91039472122
 
-    # w_opt, b_opt = gradient_descent(X, y, w, b, learning_rate, iterations)
+    years_of_experience = 5
+    predicted_salary = predict(years_of_experience, w, b)
 
-    # print("Optimized w:", w_opt)
-    # print("Optimized b:", b_opt)
-
-    y_hat = predict(X, w, b)
-    initial_cost = compute_cost(y_hat, y)
-    print(initial_cost)
+    print(f"The predicted salary for someone with {years_of_experience} years of experience is: ${predicted_salary:.2f}")
 
 main()
